@@ -59,6 +59,7 @@ lib/
 │   └── helpers.dart              # Algoritmul de normalizare a datelor
 │
 └── 🚀 main.dart                  # Punctul de intrare și temele Dark/Light
+```
 
 ---
 
