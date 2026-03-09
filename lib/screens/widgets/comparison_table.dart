@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/chart_data_model.dart';
 import '../../utils/formatter.dart';
 
+
 class ComparisonTable extends StatelessWidget {
   final AssetStats statsA, statsB;
   final String nameA, nameB, currency;

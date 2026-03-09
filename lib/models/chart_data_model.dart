@@ -1,3 +1,5 @@
+import '../utils/helpers.dart';
+
 class AssetStats {
   final double startPrice;
   final double endPrice;
@@ -11,12 +13,17 @@ class AssetStats {
 
   factory AssetStats.fromRaw(List<dynamic> raw) {
     if (raw.isEmpty) return AssetStats.empty();
+    
     double s = double.parse(raw.first['close']);
     double e = double.parse(raw.last['close']);
+    
+    // Calculăm performanța brută
+    double perf = ((e - s) / s) * 100;
+
     return AssetStats(
       startPrice: s,
       endPrice: e,
-      performance: ((e - s) / s) * 100,
+      performance: perf,
     );
   }
 
