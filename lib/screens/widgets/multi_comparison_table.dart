@@ -69,13 +69,13 @@ class MultiComparisonTable extends StatelessWidget {
             // Coloana 2: Preț Initial (startPrice)
             DataCell(Text(
               '${(s.startPrice * rate).toStringAsFixed(3)} $currency', 
-              style: TextStyle(fontSize: 11, color: isDark ? Colors.white70 : Colors.black87)
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)
             )),
             
             // Coloana 3: Preț Final (endPrice)
             DataCell(Text(
               '${(s.endPrice * rate).toStringAsFixed(3)} $currency', 
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)
             )),
             
             // Coloana 4: Evoluție (performance)

@@ -34,6 +34,65 @@ class _CompareScreenState extends State<CompareScreen> {
     Colors.purpleAccent
   ];
 
+  // Mapare pentru iconițele categoriilor (folosim emoji-uri pentru simplitate)
+  final Map<String, String> categoryIcons = {
+    'CRYPTO': '₿',
+    'TECH STOCKS (USA)': '💻',
+    'AUTOMOTIVE & ENERGY': '🚗',
+    'INDICES & COMMODITIES': '📈',
+    'OTHERS': '⚙️',
+  };
+
+  // --- LOGICA PENTRU CATEGORII ÎN DROPDOWN CU ICONIȚE ---
+  List<DropdownMenuItem<String>> _buildGroupedItems() {
+    List<DropdownMenuItem<String>> menuItems = [];
+
+    AppConstants.categorizedAssets.forEach((category, items) {
+      // Preluăm iconița sau folosim una implicită
+      final icon = categoryIcons[category] ?? '📂';
+
+      // Adăugăm Header-ul categoriei cu iconiță
+      menuItems.add(
+        DropdownMenuItem<String>(
+          enabled: false,
+          value: 'HEADER_$category',
+          child: Row(
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 14)), // Iconița
+              const SizedBox(width: 8),
+              Text(
+                category,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.blueAccent,
+                  fontSize: 11,
+                  letterSpacing: 1.1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      // Adăugăm activele din acea categorie
+      for (var assetName in items.keys) {
+        if (!selectedAssets.contains(assetName)) {
+          menuItems.add(
+            DropdownMenuItem<String>(
+              value: assetName,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Text(assetName, style: const TextStyle(fontSize: 13)),
+              ),
+            ),
+          );
+        }
+      }
+    });
+
+    return menuItems;
+  }
+
   void _fetch() async {
     if (range == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Alege perioada!")));
@@ -113,12 +172,18 @@ class _CompareScreenState extends State<CompareScreen> {
                             decoration: BoxDecoration(
                               color: isDark ? Colors.white.withOpacity(0.03) : Colors.white.withOpacity(0.7),
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: isDark ? Colors.white10 : Colors.white),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(isDark ? 0.1 : 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
                             ),
                             child: loading 
                               ? const Center(child: CircularProgressIndicator())
                               : allSpots.isEmpty 
-                                ? const Center(child: Text("Selectează active și apasă Calculează"))
+                                ? const Center(child: Text("Selectează active și alege perioada pentru a vedea graficul de comparație", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent)))
                                 : MultiChartWidget(allSpots: allSpots, assetNames: selectedAssets, colors: lineColors),
                           ),
                           const SizedBox(height: 20),
@@ -152,60 +217,55 @@ class _CompareScreenState extends State<CompareScreen> {
     );
   }
 
-Widget _buildMultiAssetSelector(bool isDark) {
-  return Card(
-    elevation: 0,
-    color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("ACTIVE COMPARATE (MAX 4)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8, runSpacing: 8,
-            children: selectedAssets.asMap().entries.map((entry) {
-              return Chip(
-                label: Text(entry.value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                backgroundColor: lineColors[entry.key % lineColors.length].withOpacity(0.2),
-                onDeleted: () {
-                  setState(() {
-                    int indexToRemove = entry.key;
-                    selectedAssets.removeAt(indexToRemove);
-                    
-                    // Verificăm dacă există date descărcate pentru acest index înainte de a le șterge
-                    if (allSpots.length > indexToRemove) {
-                      allSpots.removeAt(indexToRemove);
-                    }
-                    if (allStats.length > indexToRemove) {
-                      allStats.removeAt(indexToRemove);
-                    }
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          if (selectedAssets.length < 4) ...[
-            const Divider(height: 20),
-            DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                hint: const Text("Adaugă activ...", style: TextStyle(fontSize: 12)),
-                isExpanded: true,
-                items: AppConstants.assets.keys
-                    .where((a) => !selectedAssets.contains(a))
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                    .toList(),
-                onChanged: (v) => setState(() => selectedAssets.add(v!)),
-              ),
+  Widget _buildMultiAssetSelector(bool isDark) {
+    return Card(
+      elevation: 0,
+      color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("ACTIVE COMPARATE (MAX 4)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8, runSpacing: 8,
+              children: selectedAssets.asMap().entries.map((entry) {
+                return Chip(
+                  label: Text(entry.value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  backgroundColor: lineColors[entry.key % lineColors.length].withOpacity(0.2),
+                  onDeleted: () {
+                    setState(() {
+                      int indexToRemove = entry.key;
+                      selectedAssets.removeAt(indexToRemove);
+                      if (allSpots.length > indexToRemove) allSpots.removeAt(indexToRemove);
+                      if (allStats.length > indexToRemove) allStats.removeAt(indexToRemove);
+                    });
+                  },
+                );
+              }).toList(),
             ),
-          ]
-        ],
+            if (selectedAssets.length < 4) ...[
+              const Divider(height: 20),
+              DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  hint: const Text("Adaugă activ...", style: TextStyle(fontSize: 12)),
+                  isExpanded: true,
+                  items: _buildGroupedItems(), // Implementat cu categorii și iconițe
+                  onChanged: (v) {
+                    if (v != null && !v.startsWith('HEADER_')) {
+                      setState(() => selectedAssets.add(v));
+                    }
+                  },
+                ),
+              ),
+            ]
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildCurrencyCard(bool isDark) {
     return Card(

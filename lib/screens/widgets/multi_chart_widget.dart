@@ -58,6 +58,11 @@ class MultiChartWidget extends StatelessWidget {
           rightTitles: const AxisTitles(),
           topTitles: const AxisTitles(),
         ),
+
+        borderData: FlBorderData(
+          show: false,
+        ),
+
         lineBarsData: allSpots.asMap().entries.map((entry) {
           return LineChartBarData(
             spots: entry.value,
