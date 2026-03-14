@@ -16,16 +16,17 @@ class CurrencyService {
 
         if (rawRate == null) return 1.0;
         
-        if (rawRate is String) {
-          return double.tryParse(rawRate) ?? 1.0;
-        } else if (rawRate is num) {
+        // REZOLVARE EROARE: Verificăm tipul înainte de conversie
+        if (rawRate is num) {
           return rawRate.toDouble();
+        } else if (rawRate is String) {
+          return double.tryParse(rawRate) ?? 1.0;
         }
       }
       return 1.0;
     } catch (e) {
       print("Eroare CurrencyService: $e");
-      return 1.0; // Fallback în caz de eroare internet sau API
+      return 1.0; 
     }
   }
 }
