@@ -213,6 +213,11 @@ class _CompareScreenState extends State<CompareScreen> {
           icon: Icon(Icons.share_rounded, color: isDark ? Colors.blueAccent : Colors.indigo),
           onPressed: allStats.isEmpty ? null : () => ShareService.shareMultiAnalysis(names: selectedAssets, stats: allStats, currency: currency, rate: rate, range: range),
         ),
+        IconButton(
+          tooltip: "Embed",
+          icon: Icon(Icons.integration_instructions_rounded, color: isDark ? Colors.blueAccent : Colors.indigo),
+          onPressed: () => ShareService.copyEmbedCode(context),
+        ),
       ],
     );
   }

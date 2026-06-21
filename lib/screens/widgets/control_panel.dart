@@ -40,6 +40,6 @@ class ControlPanel extends StatelessWidget {
   );
 
   Widget _drop(String val, Function(String?) onCh) => DropdownButtonFormField<String>(
-    value: val, items: AppConstants.assets.keys.map((k) => DropdownMenuItem(value: k, child: Text(k, style: const TextStyle(fontSize: 12)))).toList(), onChanged: onCh,
+    initialValue: val, items: AppConstants.assets.keys.map((k) => DropdownMenuItem(value: k, child: Text(k, style: const TextStyle(fontSize: 12)))).toList(), onChanged: onCh,
   );
 }

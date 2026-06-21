@@ -1,8 +1,19 @@
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/chart_data_model.dart';
 
 class ShareService {
+  static const String embedCode =
+      '<iframe width="900" height="600" src="https://iamt1mmy.github.io/market_analyzer_app/" title="Market Analyzer Pro" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>';
+
+  static void copyEmbedCode(BuildContext context) {
+    Clipboard.setData(const ClipboardData(text: embedCode));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Cod embed copiat în clipboard")),
+    );
+  }
+
   static void shareMultiAnalysis({
     required List<String> names,
     required List<AssetStats> stats,
